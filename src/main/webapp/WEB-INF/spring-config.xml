@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<beans xmlns="http://www.springframework.org/schema/beans"  
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"  
+ xmlns:util="http://www.springframework.org/schema/util" xmlns:mvc="http://www.springframework.org/schema/mvc"  
+ xmlns:tx="http://www.springframework.org/schema/tx"
+ xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd  
+  http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd  
+  http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.2.xsd  
+  http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
+  http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd">  
+
+ <context:component-scan base-package="com.sombra.controller" /> 
+ <context:component-scan base-package="com.sombra.dao" />  
+ <context:component-scan base-package="com.sombra.service" />   
+
+ <mvc:annotation-driven />  
+  
+ <bean id="dataSource"  
+  class="org.springframework.jdbc.datasource.DriverManagerDataSource">  
+  <property name="driverClassName" value="com.mysql.jdbc.Driver" />  
+  <property name="url" value="jdbc:mysql://localhost:3306/movies" />  
+  <property name="username" value="root" />  
+  <property name="password" value="root" />  
+ </bean>  
+  
+ <bean id="sessionFactory"  
+  class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">  
+  <property name="dataSource" ref="dataSource" />  
+  <property name="annotatedClasses">  
+   <list>  
+    <value>com.sombra.model.Movie</value>
+    <value>com.sombra.model.User</value>  
+    <value>com.sombra.model.Rating</value>    
+   </list>  
+  </property>  
+  <property name="hibernateProperties">  
+   <props>  
+    <prop key="hibernate.dialect">org.hibernate.dialect.MySQL5Dialect</prop>  
+    <prop key="hibernate.show_sql">${hibernate.show_sql}</prop>  
+   </props>  
+  </property>  
+ </bean>  
+  
+ <bean id="transactionManager"  
+  class="org.springframework.orm.hibernate4.HibernateTransactionManager">  
+  <property name="sessionFactory" ref="sessionFactory" />  
+ </bean>  
+  
+ <bean id="persistenceExceptionTranslationPostProcessor"  
+  class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor" />  
+ <bean id="movieDAO" class="com.sombra.dao.MovieDAOImpl">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+    <bean id="movieService" class="com.sombra.service.MovieServiceImpl">
+        <property name="movieDAO" ref="movieDAO"></property> 
+ </bean>
+  <bean id="userDAO" class="com.sombra.dao.UserDAOImpl">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+    <bean id="userService" class="com.sombra.service.UserServiceImpl">
+        <property name="userDAO" ref="userDAO"></property> 
+ </bean>
+  <bean id="ratingDAO" class="com.sombra.dao.RatingDAOImpl">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+    <bean id="ratingService" class="com.sombra.service.RatingServiceImpl">
+        <property name="ratingDAO" ref="ratingDAO"></property> 
+ </bean>
+<tx:annotation-driven transaction-manager="transactionManager"/>
+<context:component-scan base-package="com.sombra" />   
+</beans>  
